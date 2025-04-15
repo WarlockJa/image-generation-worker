@@ -80,8 +80,21 @@ export default {
 			seed: parsedData.data.seed,
 		};
 
-		const response = await env.AI.run('@cf/runwayml/stable-diffusion-v1-5-inpainting', inputs);
-		// const response = await env.AI.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', inputs);
+		// if passed image and mask querying inpainting AI model
+		if (inputs.image && inputs.mask) {
+			const response = await env.AI.run('@cf/runwayml/stable-diffusion-v1-5-inpainting', inputs);
+
+			return new Response(response, {
+				status: 200,
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'content-type': 'image/png',
+				},
+			});
+		}
+
+		// generating image from prompt
+		const response = await env.AI.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', inputs);
 		// const response = await env.AI.run('@cf/lykon/dreamshaper-8-lcm', inputs);
 		// const response = await env.AI.run('@cf/bytedance/stable-diffusion-xl-lightning', inputs);
 
